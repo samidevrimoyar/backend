@@ -39,7 +39,7 @@ services:
       retries: 3
 
   backend:
-    build: ./backend
+    build: .
     ports:
       - "${BACKEND_PORT}:8000"
     env_file: .env
