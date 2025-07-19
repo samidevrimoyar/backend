@@ -25,7 +25,7 @@ app.add_middleware(
 )
 
 # Router'ları ekle
-app.include_router(auth.router)
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(words.router)
 app.include_router(health.router)
 
