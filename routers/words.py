@@ -10,8 +10,8 @@ def get_words(db: Session = Depends(get_db)):
     return db.query(Word).all()
 
 @router.get("/words/{id}")
-def get_word(id: int):
-    word = db.query(Word).filter(Word.id == word_id).first()
+def get_word(id: int, db: Session = Depends(get_db)):
+    word = db.query(Word).filter(Word.id == id).first()
     if not word:
         raise HTTPException(status_code=404, detail="Word not found")
     return word
