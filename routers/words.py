@@ -5,7 +5,7 @@ from models.word import Word
 
 router = APIRouter()
 
-@router.get("/words/")
+@router.get("/words")
 def get_words(db: Session = Depends(get_db)):
     return db.query(Word).all()
 
