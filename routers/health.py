@@ -32,16 +32,24 @@ def check_minio():
 
 @router.get("/health")
 def health_check(db: Session = Depends(get_db)):
-    status = {
-        "status": "OK",
-        "services": {
-            "database": "OK" if check_database(db) else "DOWN",
-            "minio": "OK" if check_minio() else "DOWN"
+    db_status = check_database(db)
+    minio_status = check_minio()
+
+    status_code = 200 if db_status and minio_status else 503
+
+    response = {
+        "status": "OK" if status_code == 200 else "SERVICE_UNAVAILABLE",
+        "version": "1.0.0",
+        "dependencies": {
+            "database": {
+                "status": "OK" if db_status else "DOWN",
+                "details": "PostgreSQL connection"
+            },
+            "object_storage": {
+                "status": "OK" if minio_status else "DOWN",
+                "details": "MinIO connection"
+            }
         }
     }
 
-    # Tüm servisler sağlıklı mı?
-    if all(status == "OK" for status in status["services"].values()):
-        return status
-    else:
-        return status  # İsterseniz burada 503 dönebilirsiniz
+    return JSONResponse(content=response, status_code=status_code)
