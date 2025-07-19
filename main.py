@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 import routers.words as words
-import routers.word as word
 import routers.auth as auth
 import routers.health as health
 from models.base import Base
@@ -26,7 +25,6 @@ app.add_middleware(
 # Router'ları ekle
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(words.router)
-app.include_router(word.router)
 app.include_router(health.router)
 
 if __name__ == "__main__":
