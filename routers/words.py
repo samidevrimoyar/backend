@@ -6,30 +6,11 @@ from models.word import Word
 router = APIRouter()
 
 @router.get("/words/")
-def get_words(
-    db: Session = Depends(get_db),
-    id: int = Query(None, description="Filtrelemek için kelime ID'si"),
-    search: str = Query(None, description="Genel arama (kelime veya anlamda)"),
-    limit: int = Query(100, description="Sayfa başı sonuç sayısı"),
-    offset: int = Query(0, description="Sayfa ofset değeri")
-):
-    query = db.query(Word)
+def get_words(db: Session = Depends(get_db)):
+    return db.query(Word).all()
 
-    # ID'ye göre filtreleme
-    if id:
-        query = query.filter(Word.id == id)
-
-    # Genel arama (hem term hem definition üzerinde)
-    if search:
-        query = query.filter(Word.term.ilike(f"%{search}%"))
-
-    # Sayfalama
-    words = query.offset(offset).limit(limit).all()
-
-    return words
-
-@router.get("/words/{word_id}")
-def get_word_by_id(word_id: int, db: Session = Depends(get_db)):
+@router.get("/words/{id}")
+def get_word(id: int):
     word = db.query(Word).filter(Word.id == word_id).first()
     if not word:
         raise HTTPException(status_code=404, detail="Word not found")
