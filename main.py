@@ -6,12 +6,9 @@ import routers.words as words
 import routers.auth as auth
 import routers.health as health
 from models.base import Base
+from models.user import User
+from models.word import Word
 
-# Model importları (Base metadata için gerekli)
-from models.user import User  # Eklendi
-from models.word import Word  # Eklendi
-
-# Sadece bu satırı kullanın:
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
