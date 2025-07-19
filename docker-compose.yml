@@ -20,11 +20,12 @@ services:
 
   minio:
     image: minio/minio
-    command: server /data
+    command: server /data --console-address ":9001"
     env_file: .env
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_BROWSER_REDIRECT_URL=http://${SERVER_IP}:9001
     ports:
       - "9000:9000"
       - "9001:9001"
