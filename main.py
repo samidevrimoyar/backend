@@ -2,12 +2,17 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
-import models
 import routers.words as words
 import routers.auth as auth
 import routers.health as health
+from models.base import Base
 
-models.Base.metadata.create_all(bind=engine)
+# Model importları (Base metadata için gerekli)
+from models.user import User  # Eklendi
+from models.word import Word  # Eklendi
+
+# Sadece bu satırı kullanın:
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
