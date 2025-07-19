@@ -9,7 +9,7 @@ router = APIRouter()
 def get_words(db: Session = Depends(get_db)):
     return db.query(Word).all()
 
-@router.get("/words/{word_id}")
+@router.get("/word/{word_id}")
 def get_words(word_id: int, db: Session = Depends(get_db)):
     db_word = db.query(Word).filter(Word.id == word_id).first()
     if db_word is None:
