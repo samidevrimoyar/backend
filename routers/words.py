@@ -9,6 +9,13 @@ router = APIRouter()
 def get_words(db: Session = Depends(get_db)):
     return db.query(Word).all()
 
+@router.get("/words/{word_id}")
+def get_words(word_id: int, db: Session = Depends(get_db)):
+    db_word = db.query(Word).filter(Word.id == word_id).first()
+    if db_word is None:
+        raise HTTPException(status_code=404, detail="Word not found")
+    return db_word
+
 @router.post("/words/")
 def add_word(word: dict, db: Session = Depends(get_db)):
     db_word = Word(**word)
