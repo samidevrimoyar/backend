@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 import models
 import routers.words as words
 import routers.auth as auth
+import routers.health as health
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -21,29 +22,7 @@ app.add_middleware(
 # Router'ları ekle
 app.include_router(auth.router)
 app.include_router(words.router)
-
-# Sağlık Kontrolü Endpoint'i
-@app.get("/health/")
-async def health_check(db: Session = Depends(get_db)):
-    # PostgreSQL kontrolü
-    try:
-        db.execute("SELECT 1")
-        db_status = "OK"
-    except Exception:
-        db_status = "ERROR"
-
-    # MinIO kontrolü
-    try:
-        minio_client.list_buckets()
-        minio_status = "OK"
-    except S3Error:
-        minio_status = "ERROR"
-
-    return {
-        "status": "SERVING" if db_status == "OK" and minio_status == "OK" else "FAILED",
-        "postgresql": db_status,
-        "minio": minio_status
-    }
+app.include_router(health.router)
 
 if __name__ == "__main__":
     import uvicorn
