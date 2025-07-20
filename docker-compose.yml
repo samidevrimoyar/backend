@@ -10,7 +10,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml
-      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yaml
       - ./traefik/acme.json:/etc/traefik/acme.json
     environment:
       - NAMESILO_API_KEY=${NAMESILO_API_KEY}  # Namesilo API key aktarımı
@@ -41,7 +41,7 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_BROWSER_REDIRECT_URL=http://${SERVER_IP}:9001
+      - MINIO_BROWSER_REDIRECT_URL=https://${SERVER_IP}:9001
     # ports:  # KAPATIN
       # - "9000:9000"
       # - "9001:9001"

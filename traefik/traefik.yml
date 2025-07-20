@@ -29,7 +29,7 @@ certificatesResolvers:
       storage: "/etc/traefik/acme.json"
       dnsChallenge:
         provider: namesilo
-        delayBeforeCheck: 30  # DNS yayılımı için bekleme süresi
+        delayBeforeCheck: 120  # DNS yayılımı için bekleme süresi
         resolvers:
           - "1.1.1.1:53"
           - "8.8.8.8:53"
