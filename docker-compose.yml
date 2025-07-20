@@ -14,7 +14,6 @@ services:
       - ./traefik/acme.json:/etc/traefik/acme.json
     environment:
       - NAMESILO_API_KEY=${NAMESILO_API_KEY}  # Namesilo API key aktarımı
-      - ACME_EMAIL=$ACME_EMAIL
     networks:
       - traefik_network
 

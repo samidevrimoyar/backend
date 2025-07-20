@@ -25,7 +25,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: $ACME_EMAIL
+      email: sami.devrim@gmail.com
       storage: "/etc/traefik/acme.json"
       dnsChallenge:
         provider: namesilo
