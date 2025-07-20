@@ -1,0 +1,16 @@
+# traefik/dynamic.yml
+http:
+  routers:
+    backend-router:
+      rule: "Host(`api.${DOMAIN}`)"  # Örnek: api.yourdomain.com
+      entryPoints:
+        - "websecure"
+      service: backend-service
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    backend-service:
+      loadBalancer:
+        servers:
+          - url: "http://backend:3000"  # Backend servis adı ve portu

@@ -1,6 +1,20 @@
 version: '3.8'
-
 services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    env_file: .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml
+      - ./traefik/acme.json:/etc/traefik/acme.json
+    environment:
+      - NAMESILO_API_KEY=${NAMESILO_API_KEY}  # Namesilo API key aktarımı
+
   db:
     image: postgres:13
     env_file: .env
@@ -40,10 +54,14 @@ services:
       retries: 3
 
   backend:
+    image: backend_backend:latest
+    container_name: backend
     build: .
     ports:
       - "8000:8000"
     env_file: .env
+    labels:
+      - "traefik.enable=true"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
@@ -55,7 +73,7 @@ services:
       minio:
         condition: service_healthy
     networks:
-      - app-network
+      - traefik_network
     restart: unless-stopped
 
 networks:
