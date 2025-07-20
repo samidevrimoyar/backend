@@ -9,8 +9,23 @@ http:
       tls:
         certResolver: letsencrypt
 
+    # MinIO router (eklenmesi gereken)
+    minio-router:
+      rule: "Host(`minio.superisi.net`)"
+      entryPoints:
+        - "websecure"
+      service: minio-service
+      tls:
+        certResolver: letsencrypt
+
   services:
     backend-service:
       loadBalancer:
         servers:
           - url: "http://backend:8000"  # Backend servis adı ve portu
+
+    # MinIO service (eklenmesi gereken)
+    minio-service:
+      loadBalancer:
+        servers:
+          - url: "http://minio:9001"  # MinIO console portu
