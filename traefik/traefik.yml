@@ -1,4 +1,7 @@
 # traefik/traefik.yml
+log:
+  level: DEBUG
+
 api:
   dashboard: true
   insecure: true  # Güvenlik için sonra kapatın
