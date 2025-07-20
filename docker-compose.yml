@@ -14,6 +14,7 @@ services:
       - ./traefik/acme.json:/etc/traefik/acme.json
     environment:
       - NAMESILO_API_KEY=${NAMESILO_API_KEY}  # Namesilo API key aktarımı
+      - ACME_EMAIL=${ACME_EMAIL}
     networks:
       - traefik_network
 
@@ -70,7 +71,7 @@ services:
     env_file: .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.backend.rule=Host(`api.superisi.net`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
