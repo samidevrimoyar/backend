@@ -14,6 +14,8 @@ services:
       - ./traefik/acme.json:/etc/traefik/acme.json
     environment:
       - NAMESILO_API_KEY=${NAMESILO_API_KEY}  # Namesilo API key aktarımı
+    networks:
+      - traefik_network
 
   db:
     image: postgres:13
@@ -40,9 +42,15 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
       - MINIO_BROWSER_REDIRECT_URL=http://${SERVER_IP}:9001
-    ports:
-      - "9000:9000"
-      - "9001:9001"
+    ports:  # KAPATIN
+      # - "9000:9000"
+      # - "9001:9001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`minio.${DOMAIN}`)"
+      - "traefik.http.routers.minio.entrypoints=websecure"
+      - "traefik.http.routers.minio.tls.certresolver=letsencrypt"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
     volumes:
       - minio_data:/data
     networks:
@@ -57,11 +65,15 @@ services:
     image: backend_backend:latest
     container_name: backend
     build: .
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     env_file: .env
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.${DOMAIN}`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
