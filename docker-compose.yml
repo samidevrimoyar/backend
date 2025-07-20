@@ -39,12 +39,9 @@ services:
     command: server /data --console-address ":9001"
     env_file: .env
     environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_BROWSER_REDIRECT_URL=https://${SERVER_IP}:9001
-    # ports:  # KAPATIN
-      # - "9000:9000"
-      # - "9001:9001"
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BROWSER_REDIRECT_URL: "https://minio.${DOMAIN}"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.minio.rule=Host(`minio.${DOMAIN}`)"
