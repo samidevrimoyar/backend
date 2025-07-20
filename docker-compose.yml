@@ -10,7 +10,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml
-      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yaml
+      - ./traefik/dynamic.yaml:/etc/traefik/dynamic.yaml
       - ./traefik/acme.json:/etc/traefik/acme.json
     environment:
       - NAMESILO_API_KEY=${NAMESILO_API_KEY}  # Namesilo API key aktarımı
