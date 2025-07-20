@@ -39,3 +39,6 @@ certificatesResolvers:
         namesilo:
           apiKey: ${NAMESILO_API_KEY}
           propagationTimeout: 600
+          pollingInterval: 30
+          # Aşağıdaki satırı ekleyin
+          sequenceInterval: 10
