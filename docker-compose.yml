@@ -13,8 +13,7 @@ services:
       - ./traefik/dynamic.yaml:/etc/traefik/dynamic.yaml
       - ./traefik/acme.json:/etc/traefik/acme.json
     environment:
-      - NAMESILO_API_KEY=${NAMESILO_API_KEY}  # Namesilo API key aktarımı
-      - NAMESILO_USERNAME=${NAMESILO_USERNAME}
+      - DO_AUTH_TOKEN=${DIGITALOCEAN_API_TOKEN}
     networks:
       - traefik_network
 

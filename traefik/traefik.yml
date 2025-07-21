@@ -25,14 +25,11 @@ providers:
   file:
     filename: "/etc/traefik/dynamic.yaml"
 
+# traefik.yml
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: sami.devrim@gmail.com
+      email: ${ACME_EMAIL}
       storage: "/etc/traefik/acme.json"
       dnsChallenge:
-        provider: namesilo
-        delayBeforeCheck: 120  # DNS yayılımı için bekleme süresi
-        resolvers:
-          - "1.1.1.1:53"
-          - "8.8.8.8:53"
+        provider: digitalocean
