@@ -73,7 +73,8 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     new_user = User(
         username=request.username,
         password=hashed_password,
-        is_admin=request.is_admin
+        # buraya girilmesin
+        # is_admin=request.is_admin
     )
     db.add(new_user)
     db.commit()
@@ -82,5 +83,7 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     return {
         "message": "User registered successfully",
         "username": new_user.username,
-        "is_admin": new_user.is_admin
+        "is_admin": false
+        # üstteki satır şöyleydi, değiştirilmesin diye false.ye çevirdim
+        # "is_admin": new_user.is_admin
     }
