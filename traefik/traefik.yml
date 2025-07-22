@@ -1,10 +1,10 @@
 # traefik/traefik.yml
 log:
-  level: DEBUG
+  level: ERROR
 
 api:
   dashboard: true
-  insecure: true  # Güvenlik için sonra kapatın
+  insecure: false  # Güvenlik için sonra kapatın
 
 entryPoints:
   web:
@@ -29,7 +29,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: ${ACME_EMAIL}
+      email: sami.devrim@gmail.com
       storage: "/etc/traefik/acme.json"
       dnsChallenge:
         provider: digitalocean

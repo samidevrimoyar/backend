@@ -32,6 +32,10 @@ def check_minio():
     except S3Error:
         return False
 
+@router.get("/") # Bu satırı ekleyin veya mevcutsa kontrol edin
+async def read_root():
+    return {"message": "Welcome to the Superisi API!"}
+
 @router.get("/health")
 def health_check(db: Session = Depends(get_db)):
     db_status = check_database(db)
