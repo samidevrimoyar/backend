@@ -109,8 +109,7 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     return {
         "message": "User registered successfully",
         "username": new_user.username,
-        "is_admin": false
-        # "is_admin": new_user.is_admin
+        "is_admin": new_user.is_admin
     }
 
 # Mevcut aktif kullanıcıyı döndüren bağımlılık (dependency)
