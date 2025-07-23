@@ -98,8 +98,7 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     new_user = User(
         username=request.username,
         password=hashed_password,
-        is_admin=false
-        # is_admin=request.is_admin
+        is_admin=request.is_admin
     )
     # Kullanıcıyı veritabanına ekle
     db.add(new_user)
