@@ -67,7 +67,9 @@ services:
     env_file: .env
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.superisi.net`)"
+      - "traefik.http.routers.backend.rule=Host(`api.${DOMAIN}`)"
+      # değişkene yönlendirdim @devrim
+      # - "traefik.http.routers.backend.rule=Host(`api.superisi.net`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"

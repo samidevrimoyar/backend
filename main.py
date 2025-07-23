@@ -1,32 +1,47 @@
-from fastapi import FastAPI, Depends
+# main.py
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine, SessionLocal
-from sqlalchemy.orm import Session
-import routers.words as words
-import routers.auth as auth
-import routers.health as health
-from models.base import Base
-from models.user import User
-from models.word import Word
+from database import Base, engine # Base ve engine'i database.py'den içe aktarın
+import routers.auth as auth # Kimlik doğrulama router'ını içe aktarın
+import os # Ortam değişkenlerini okumak için
 
+# Veritabanı tablolarını oluşturun
+# Bu, modellerinizi tanımladıktan sonra çalışacaktır
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
-
-# CORS Ayarları
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+app = FastAPI(
+    title="Superisi Dictionary API",
+    description="A dictionary and user management API for Superisi.",
+    version="0.0.1",
 )
 
-# Router'ları ekle
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(words.router)
-app.include_router(health.router)
+# CORS Ayarları (Geliştirme ortamında her yerden erişime izin verir)
+# Üretim ortamında belirli origin'lere kısıtlamanız ÖNEMLİDİR.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Tüm origin'lere izin ver
+    allow_credentials=True,
+    allow_methods=["*"], # Tüm HTTP metotlarına izin ver
+    allow_headers=["*"], # Tüm başlıkları kabul et
+)
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# Health Check Endpoint
+@app.get("/", summary="Root endpoint for API health check")
+async def root():
+    return {"message": "Welcome to Superisi Dictionary API! Visit /docs for API documentation."}
+
+# Router'ları ekle
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+
+# Uygulama ayağa kalktığında çalışacak kod (isteğe bağlı)
+@app.on_event("startup")
+async def startup_event():
+    print("FastAPI application started up.")
+    # DEBUG modu kontrolü
+    debug_mode = os.getenv("DEBUG", "0").lower() in ("true", "1")
+    if debug_mode:
+        print("Running in DEBUG mode.")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    print("FastAPI application is shutting down.")
