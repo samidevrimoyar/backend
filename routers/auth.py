@@ -1,17 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from database import get_db
-from models.user import User
+from models.user import User # User modelini içe aktarın
 from passlib.context import CryptContext
-import jwt
+from jose import JWTError, jwt # python-jose kütüphanesinden içe aktarın
 from datetime import datetime, timedelta
-import os
+import os # Ortam değişkenlerini okumak için
 
 router = APIRouter()
 
+# Şifre hashleme için CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# Ortam değişkeninden gizli anahtarı al
 SECRET_KEY = os.getenv("SECRET_KEY")
 if SECRET_KEY is None:
     raise Exception("SECRET_KEY environment variable not set.")
@@ -19,12 +21,15 @@ if SECRET_KEY is None:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+# Şifre doğrulama fonksiyonu
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+# Şifre hashleme fonksiyonu
 def get_password_hash(password):
     return pwd_context.hash(password)
 
+# JWT oluşturma fonksiyonu
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -32,33 +37,38 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+# Giriş isteği için Pydantic modeli
 class LoginRequest(BaseModel):
     username: str
     password: str
 
-# Yeni kullanıcı kayıt isteği için Pydantic modeli
+# Kullanıcı kaydı isteği için Pydantic modeli
 class RegisterRequest(BaseModel):
     username: str
     password: str
     is_admin: bool = False # Varsayılan olarak admin değil
 
-@router.post("/login")
+# Giriş endpoint'i
+@router.post("/login", summary="Authenticate user and get JWT token")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == request.username).first()
     if not user or not verify_password(request.password, user.password):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect username or password"
+        )
 
     access_token = create_access_token(data={"sub": user.username})
     return {
         "username": user.username,
         "token": access_token,
+        "token_type": "bearer",
         "is_admin": user.is_admin
     }
 
-# Yeni kullanıcı kayıt endpoint'i
-@router.post("/register")
+# Kullanıcı kayıt endpoint'i
+@router.post("/register", summary="Register a new user")
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
-    # Kullanıcının zaten var olup olmadığını kontrol et
     existing_user = db.query(User).filter(User.username == request.username).first()
     if existing_user:
         raise HTTPException(
@@ -66,25 +76,19 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
             detail="Username already registered"
         )
 
-    # Şifreyi hash'le
     hashed_password = get_password_hash(request.password)
 
-    # Yeni kullanıcıyı oluştur
     new_user = User(
         username=request.username,
         password=hashed_password,
-        # buraya girilmesin
-        # is_admin=request.is_admin
+        is_admin=request.is_admin
     )
     db.add(new_user)
     db.commit()
-    db.refresh(new_user) # Veritabanından güncel bilgileri çek
+    db.refresh(new_user)
 
     return {
         "message": "User registered successfully",
         "username": new_user.username,
-        "is_admin": false
-        # üstteki satır şöyleydi, değiştirilmesin diye false.ye çevirdim
-        # aslında constructer false yapıyor ama olsun.
-        # "is_admin": new_user.is_admin
+        "is_admin": new_user.is_admin
     }
