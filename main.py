@@ -5,6 +5,10 @@ from database import Base, engine # Base ve engine'i database.py'den içe aktar�
 import routers.auth as auth # Kimlik doğrulama router'ını içe aktarın
 import os # Ortam değişkenlerini okumak için
 
+# BURAYI EKLEYİN: Yeni modelleri (word.py) içe aktarın ki Base.metadata.create_all bunları tanısın
+import models.word
+import models.user # User modelinin de burada içe aktarılması iyi pratiktir, emin olmak için
+
 # Veritabanı tablolarını oluşturun
 # Bu, modellerinizi tanımladıktan sonra çalışacaktır
 Base.metadata.create_all(bind=engine)
@@ -32,6 +36,11 @@ async def root():
 
 # Router'ları ekle
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+
+
+# BURAYI EKLEYİN: words router'ı (bir sonraki adımda oluşturacağız)
+# import routers.words as words # Henüz yok, sonra uncomment edeceğiz
+# app.include_router(words.router, prefix="/words", tags=["Dictionary"])
 
 # Uygulama ayağa kalktığında çalışacak kod (isteğe bağlı)
 @app.on_event("startup")
