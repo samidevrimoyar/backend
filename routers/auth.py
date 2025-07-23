@@ -26,7 +26,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # OAuth2 şifre taşıyıcısı (Bearer token)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="") # URL'nin başında "/" işareti de olmalı
+OAuth2PasswordBearer(tokenUrl="")
 
 
 # Şifre doğrulama fonksiyonu
