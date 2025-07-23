@@ -26,7 +26,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # OAuth2 şifre taşıyıcısı (Bearer token)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login") # URL'nin başında "/" işareti de olmalı
+
 
 # Şifre doğrulama fonksiyonu
 def verify_password(plain_password, hashed_password):
@@ -53,7 +54,7 @@ class LoginRequest(BaseModel):
 class RegisterRequest(BaseModel):
     username: str # Kullanıcı adı alanı
     password: str # Şifre alanı
-    is_admin: bool = False # Varsayılan olarak admin değil
+    # is_admin: bool = False # Varsayılan olarak admin değil
 
 # Token verisi için Pydantic modeli
 class TokenData(BaseModel):
