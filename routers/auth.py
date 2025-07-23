@@ -1,6 +1,4 @@
-# routers/auth.py
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Form # 'Form'u ekledik
 from fastapi.security import OAuth2PasswordBearer # OAuth2 (JWT) için
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -10,7 +8,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt # python-jose kütüphanesinden içe aktarın
 from datetime import datetime, timedelta
 import os # Ortam değişkenlerini okumak için
-from typing import Optional
+from typing import Optional # 'Optional' tipi için gerekli
 
 router = APIRouter()
 
@@ -26,7 +24,9 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # OAuth2 şifre taşıyıcısı (Bearer token)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login") # URL'nin başında "/" işareti de olmalı
+# Swagger UI'ın "Authorize" penceresinde kullanıcı adı/şifre alanlarını göstermesi için tokenUrl gerekli.
+# URL'in başında "/" olduğundan emin olun.
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 # Şifre doğrulama fonksiyonu
 def verify_password(plain_password, hashed_password):
@@ -44,28 +44,35 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM) # JWT'yi şifrele
     return encoded_jwt
 
-# Giriş isteği için Pydantic modeli
-class LoginRequest(BaseModel):
-    username: str # Kullanıcı adı alanı
-    password: str # Şifre alanı
+# Eski LoginRequest modeli, Form() kullanımı için artık doğrudan endpoint'te kullanılmayacak.
+# Bu modeli isterseniz silebilirsiniz, ancak manuel JSON POST testleri için saklamak isteyebilirsiniz.
+# class LoginRequest(BaseModel):
+#     username: str
+#     password: str
 
 # Kullanıcı kaydı isteği için Pydantic modeli
 class RegisterRequest(BaseModel):
     username: str # Kullanıcı adı alanı
     password: str # Şifre alanı
-    # is_admin: bool = False # Varsayılan olarak admin değil
+    # is_admin: bool = False # Kullanıcının kendini admin yapmasını engellemek için bu satırı SİLDİK
 
 # Token verisi için Pydantic modeli
 class TokenData(BaseModel):
     username: Optional[str] = None # Token içindeki kullanıcı adı
 
-# Giriş endpoint'i
+# Giriş endpoint'i - Burası Form verisi kabul edecek şekilde GÜNCELLENDİ
 @router.post("/login", summary="Authenticate user and get JWT token")
-def login(request: LoginRequest, db: Session = Depends(get_db)):
+def login(
+    # Bu endpoint'e gelecek olan kullanıcı adı ve şifre bilgilerini Form verisi olarak alıyoruz.
+    # Swagger UI'daki "Authorize" butonu da bu formatı kullanır.
+    username: str = Form(...), # Kullanıcı adını zorunlu bir form alanı olarak al
+    password: str = Form(...), # Şifreyi zorunlu bir form alanı olarak al
+    db: Session = Depends(get_db) # Veritabanı oturumu bağımlılığı
+):
     # Kullanıcıyı veritabanında bul
-    user = db.query(User).filter(User.username == request.username).first()
+    user = db.query(User).filter(User.username == username).first()
     # Kullanıcı yoksa veya şifre yanlışsa hata döndür
-    if not user or not verify_password(request.password, user.password):
+    if not user or not verify_password(password, user.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect username or password"
@@ -80,7 +87,7 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         "is_admin": user.is_admin
     }
 
-# Kullanıcı kayıt endpoint'i
+# Kullanıcı kayıt endpoint'i - is_admin'in her zaman False olmasını GARANTİ EDİLDİ
 @router.post("/register", summary="Register a new user")
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
     # Kullanıcı adının zaten kayıtlı olup olmadığını kontrol et
@@ -95,11 +102,11 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     hashed_password = get_password_hash(request.password)
 
     # Yeni kullanıcı objesini oluştur
+    # is_admin değeri doğrudan 'False' olarak atandı, client'tan gelen değer göz ardı edilir.
     new_user = User(
         username=request.username,
         password=hashed_password,
-        is_admin=False # BURAYI ZORLA FALSE OLARAK BELİRLEYİN
-        # is_admin=request.is_admin
+        is_admin=False # BURASI KESİNLİKLE FALSE OLACAK
     )
     # Kullanıcıyı veritabanına ekle
     db.add(new_user)
