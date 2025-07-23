@@ -10,6 +10,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt # python-jose kütüphanesinden içe aktarın
 from datetime import datetime, timedelta
 import os # Ortam değişkenlerini okumak için
+from typing import Optional
 
 router = APIRouter()
 
