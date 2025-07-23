@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship # İlişkileri tanımlamak için
 from models.base import BaseModel # models/base.py dosyasındaki BaseModel'i içe aktarın
 from pydantic import BaseModel as PydanticBaseModel # Pydantic BaseModel'i SQLAlchemy modelinden ayırmak için yeniden adlandırın
 from typing import Optional # Alanların isteğe bağlı olabileceğini belirtmek için
+from datetime import datetime
 
 # Veritabanı Modeli (SQLAlchemy)
 class Word(BaseModel):
