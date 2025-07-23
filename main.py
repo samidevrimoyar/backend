@@ -39,8 +39,8 @@ app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 
 
 # BURAYI EKLEYİN: words router'ı (bir sonraki adımda oluşturacağız)
-# import routers.words as words # Henüz yok, sonra uncomment edeceğiz
-# app.include_router(words.router, prefix="/words", tags=["Dictionary"])
+import routers.words as words # Henüz yok, sonra uncomment edeceğiz
+app.include_router(words.router, prefix="/words", tags=["Dictionary"])
 
 # Uygulama ayağa kalktığında çalışacak kod (isteğe bağlı)
 @app.on_event("startup")
