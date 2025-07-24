@@ -25,7 +25,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # OAuth2 şifre taşıyıcısı (Bearer token)
 # tokenUrl parametresini tamamen kaldırdık. Bu, Swagger UI'da doğrudan "Value" alanını sağlar.
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="")
 
 # Şifre doğrulama fonksiyonu
 def verify_password(plain_password, hashed_password):
@@ -59,7 +59,7 @@ class TokenData(BaseModel):
 
 # Giriş endpoint'i - JSON body kabul edecek şekilde GÜNCELLENDİ
 @router.post("/login", summary="Authenticate user and get JWT token")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(request: LoginRequest, db: Session = Depends(get_db)):
     # Kullanıcıyı veritabanında bul
     user = db.query(User).filter(User.username == request.username).first()
     # Kullanıcı yoksa veya şifre yanlışsa hata döndür
