@@ -82,7 +82,7 @@ def login(
     access_token = create_access_token(data={"sub": user.username})
     return {
         "username": user.username,
-        "token": access_token,
+        "access_token": access_token,
         "token_type": "bearer",
         "is_admin": user.is_admin
     }
