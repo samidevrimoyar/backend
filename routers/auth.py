@@ -25,7 +25,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # OAuth2 şifre taşıyıcısı (Bearer token)
 # tokenUrl parametresini tamamen kaldırdık. Bu, Swagger UI'da doğrudan "Value" alanını sağlar.
-oauth2_scheme = OAuth2PasswordBearer() # tokenUrl parametresi yok
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 # Şifre doğrulama fonksiyonu
 def verify_password(plain_password, hashed_password):
