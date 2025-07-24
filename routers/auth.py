@@ -59,7 +59,7 @@ class TokenData(BaseModel):
 
 # Giriş endpoint'i - JSON body kabul edecek şekilde GÜNCELLENDİ
 @router.post("/login", summary="Authenticate user and get JWT token")
-def login(request: LoginRequest, db: Session = Depends(get_db)):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # Kullanıcıyı veritabanında bul
     user = db.query(User).filter(User.username == request.username).first()
     # Kullanıcı yoksa veya şifre yanlışsa hata döndür
