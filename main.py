@@ -34,8 +34,10 @@ async def root():
     return {"message": "Welcome to Superisi Dictionary API! Visit /docs for API documentation."}
 
 # Router'ları ekle
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-
+#app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+#değişiklik baş
+app.include_router(auth.router)
+#değişiklik bit
 
 # BURAYI EKLEYİN: words router'ı (bir sonraki adımda oluşturacağız)
 import routers.words as words # Henüz yok, sonra uncomment edeceğiz
